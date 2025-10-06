@@ -106,6 +106,68 @@
                 <span class="shipping-separator">|</span>
                 <span class="shipping-subtitle">결제시 착불 선택</span>
               </div>
+              
+              <!-- 결제방법 버튼 -->
+              <button class="payment-method-btn" id="paymentMethodBtn">결제방법</button>
+              
+              <!-- 결제방법 안내 UI (버튼 클릭 시 표시) -->
+              <div class="payment-guide-box hide" id="paymentGuideBox">
+                <!-- 탭 메뉴 -->
+                <div class="guide-tab-menu">
+                  <button class="guide-tab-btn active" id="guideTabPayment">주문시 결제</button>
+                  <button class="guide-tab-btn" id="guideTabDelivery">착불(경동택배)</button>
+                </div>
+
+                <!-- 안내 컨텐츠 -->
+                <div class="payment-guide-content">
+                  <!-- 네이버 스토어 입력 안내 -->
+                  <div class="guide-instruction-box">
+                    <div class="instruction-title">💡 네이버 스토어에서 아래와 같이 입력하세요</div>
+                  </div>
+
+                  <!-- 가로X세로 / 수량 입력 안내 -->
+                  <div class="guide-input-instruction">
+                    <div class="guide-input-title">가로X세로 (mm) / 상품 수량(개)를 입력해주세요.</div>
+                  </div>
+
+                  <!-- 견적 항목 리스트 (동적으로 추가됨, 최대 5개) -->
+                  <div id="guideEstimateList"></div>
+
+                  <!-- 5개 초과 안내 -->
+                  <div id="guideOverflowNotice" class="guide-overflow-notice hide">
+                    <div class="overflow-text">⚠️ 견적 항목이 5개를 초과했습니다. 별도 문의 바랍니다.</div>
+                  </div>
+                  
+                  <!-- 문의자 정보 안내 -->
+                  <div class="guide-info-box">
+                    <div class="guide-info-text">
+                      <div class="info-title">문의자</div>
+                      <div class="info-example">예) 셀프견적 / 카톡 홍길동 / 1234(연락처 뒷번호) 입력해주세요.</div>
+                    </div>
+                  </div>
+
+                  <!-- 면모서리가공 (동적으로 추가됨) -->
+                  <div id="guideEdgeBox"></div>
+
+                  <!-- 숨겨진 데이터 저장용 -->
+                  <div id="guide100Qty" class="hide">0</div>
+                  <div id="guideEdgeQty" class="hide">0</div>
+                  <div id="guideEdgePrice" class="hide">0</div>
+
+                  <!-- 총 상품 금액 -->
+                  <div class="guide-total-section">
+                    <div class="guide-total-row">
+                      <span class="guide-total-label">총 상품 금액</span>
+                      <div class="guide-help-icon">?</div>
+                    </div>
+                    <div class="guide-total-row">
+                      <span class="guide-total-quantity" id="guideTotalQty">총 수량 0개</span>
+                      <span class="guide-total-price" id="guideTotalPrice">0원</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
               <a href="https://mkt.shopping.naver.com/link/686b9a522659cd423b21b54f" target="_blank" class="naver-payment-btn">네이버 결제 바로가기</a>
             </div>
           </div>

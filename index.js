@@ -254,6 +254,11 @@ submitBtn.addEventListener('click', function() {
   
   resultCard.classList.remove('hide');
 
+  // 결제방법 안내 UI가 열려있으면 실시간 업데이트
+  if (paymentGuideBox && !paymentGuideBox.classList.contains('hide')) {
+    updatePaymentGuide();
+  }
+
   // 결제 안내문은 더 이상 사용하지 않음 (새로운 UI로 대체)
 
   // 견적 리스트에 카드 추가 (샘플 이미지 없이, 정보만)
@@ -332,7 +337,18 @@ submitBtn.addEventListener('click', function() {
     if (newTotal === 0) {
       // 모든 항목이 삭제된 경우 결과 카드 숨기기
       resultCard.classList.add('hide');
+      
+      // 결제방법 안내 UI도 닫기
+      if (!paymentGuideBox.classList.contains('hide')) {
+        paymentGuideBox.classList.add('hide');
+        paymentMethodBtn.textContent = '결제방법';
+      }
       return;
+    }
+    
+    // 결제방법 안내 UI가 열려있으면 업데이트
+    if (!paymentGuideBox.classList.contains('hide')) {
+      updatePaymentGuide();
     }
     
     // 결제 안내문은 더 이상 사용하지 않음 (새로운 UI로 대체)
@@ -345,3 +361,187 @@ submitBtn.addEventListener('click', function() {
 
 // 최초 진입 시 결과 카드 숨김
 resultCard.classList.add('hide');
+
+// 결제방법 버튼 클릭 이벤트
+const paymentMethodBtn = document.getElementById('paymentMethodBtn');
+const paymentGuideBox = document.getElementById('paymentGuideBox');
+const guideTabPayment = document.getElementById('guideTabPayment');
+const guideTabDelivery = document.getElementById('guideTabDelivery');
+
+// 결제방법 안내 UI 업데이트 함수
+function updatePaymentGuide() {
+  const guideEstimateList = document.getElementById('guideEstimateList');
+  const guideOverflowNotice = document.getElementById('guideOverflowNotice');
+  const guide100Qty = document.getElementById('guide100Qty');
+  const guideTotalQty = document.getElementById('guideTotalQty');
+  const guideTotalPrice = document.getElementById('guideTotalPrice');
+  const guideEdgeBox = document.getElementById('guideEdgeBox');
+  const guideEdgeQty = document.getElementById('guideEdgeQty');
+  const guideEdgePrice = document.getElementById('guideEdgePrice');
+  
+  // 견적 리스트가 비어있으면 초기화
+  if (estimateList.length === 0) {
+    guideEstimateList.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">견적 항목이 없습니다.</div>';
+    guideOverflowNotice.classList.add('hide');
+    guide100Qty.textContent = '0';
+    
+    // 면모서리가공 박스 초기화
+    if (guideEdgeBox) guideEdgeBox.innerHTML = '';
+    if (guideEdgeQty) guideEdgeQty.textContent = '0';
+    if (guideEdgePrice) guideEdgePrice.textContent = '0원';
+    
+    guideTotalQty.textContent = '총 수량 0개';
+    guideTotalPrice.textContent = '0원';
+    return;
+  }
+  
+  // 견적 리스트 초기화
+  guideEstimateList.innerHTML = '';
+  
+  // 총 금액과 수량 계산
+  const totalSum = estimateList.reduce((acc, cur) => acc + cur.total, 0);
+  const totalQuantity = estimateList.reduce((acc, cur) => acc + cur.quantity, 0);
+  const { pay1000, pay100 } = getPaymentGuide(totalSum);
+  
+  // 5개 초과 여부 확인
+  if (estimateList.length > 5) {
+    guideOverflowNotice.classList.remove('hide');
+  } else {
+    guideOverflowNotice.classList.add('hide');
+  }
+  
+  // 하나의 큰 입력창 생성
+  const mainBoxDiv = document.createElement('div');
+  mainBoxDiv.className = 'guide-estimate-main-box';
+  
+  // 상단 헤더
+  let mainHTML = `
+    <div class="guide-estimate-input-box">
+      <div class="guide-estimate-input-text">가로X세로 (mm) / 상품 수량(개)를 입력해주세요.</div>
+    </div>
+  `;
+  
+  // 견적 항목들 추가 (최대 5개만 표시)
+  const displayList = estimateList.slice(0, 5);
+  displayList.forEach((item, index) => {
+    // 각 항목의 금액을 1,000원 단위로 분해
+    const itemPay1000 = Math.floor(item.total / 1000);
+    
+    // 견적 정보와 1,000원 단위를 한 행에 표시
+    mainHTML += `
+      <div class="guide-estimate-row">
+        <div class="estimate-info-line">
+          <span class="estimate-info-text">${item.width}*${item.height} / ${item.quantity}개 / 셀프견적 / ${item.type} ${item.thickness}T</span>
+        </div>
+        <div class="estimate-payment-line">
+          <div class="payment-qty-box">
+            <button class="qty-btn">-</button>
+            <span class="qty-value">${itemPay1000}</span>
+            <button class="qty-btn">+</button>
+          </div>
+          <span class="estimate-total-price">${(itemPay1000 * 1000).toLocaleString()}원</span>
+        </div>
+      </div>
+    `;
+  });
+  
+  mainBoxDiv.innerHTML = mainHTML;
+  guideEstimateList.appendChild(mainBoxDiv);
+  
+  // 100원 단위 전체 합계 (있을 경우만)
+  if (pay100 > 0) {
+    const hundredBoxDiv = document.createElement('div');
+    hundredBoxDiv.className = 'guide-estimate-main-box';
+    hundredBoxDiv.innerHTML = `
+      <div class="guide-estimate-row">
+        <div class="estimate-info-line">
+          <span class="estimate-info-text">100원 단위 금액 추가</span>
+        </div>
+        <div class="estimate-payment-line">
+          <div class="payment-qty-box">
+            <button class="qty-btn">-</button>
+            <span class="qty-value">${pay100}</span>
+            <button class="qty-btn">+</button>
+          </div>
+          <span class="estimate-total-price">${(pay100 * 100).toLocaleString()}원</span>
+        </div>
+      </div>
+    `;
+    guideEstimateList.appendChild(hundredBoxDiv);
+  }
+  
+  // 면모서리가공 박스 생성
+  const edgeTotalPrice = totalQuantity * 500;
+  
+  const edgeBoxDiv = document.createElement('div');
+  edgeBoxDiv.className = 'guide-estimate-main-box';
+  edgeBoxDiv.innerHTML = `
+    <div class="edge-optional-header">선택사항</div>
+    <div class="guide-estimate-row">
+      <div class="estimate-info-line">
+        <span class="estimate-info-text">면모서리가공 1장</span>
+      </div>
+      <div class="estimate-payment-line">
+        <div class="payment-qty-box">
+          <button class="qty-btn">-</button>
+          <span class="qty-value">${totalQuantity}</span>
+          <button class="qty-btn">+</button>
+        </div>
+        <span class="estimate-total-price">${edgeTotalPrice.toLocaleString()}원</span>
+      </div>
+    </div>
+  `;
+  
+  if (guideEdgeBox) {
+    guideEdgeBox.innerHTML = '';
+    guideEdgeBox.appendChild(edgeBoxDiv);
+  }
+  
+  // 수량 정보 업데이트 (숨겨진 요소)
+  guide100Qty.textContent = pay100;
+  if (guideEdgeQty) guideEdgeQty.textContent = totalQuantity;
+  if (guideEdgePrice) guideEdgePrice.textContent = edgeTotalPrice.toLocaleString() + '원';
+  
+  guideTotalQty.textContent = `총 수량 ${totalQuantity}개`;
+  guideTotalPrice.textContent = totalSum.toLocaleString() + '원';
+  
+  // 경동택배 조건 확인 (견적 리스트에서)
+  const hasLargeSize = estimateList.some(item => 
+    item.width >= 900 || item.height >= 900 || (item.width > 650 && item.height > 650)
+  );
+  
+  // 탭 활성화 상태 업데이트
+  if (hasLargeSize && estimateList.length > 0) {
+    // 착불 조건 충족 시 착불 탭 활성화 (빨간색)
+    guideTabPayment.classList.remove('active');
+    guideTabDelivery.classList.remove('active');
+    guideTabDelivery.classList.add('delivery-active');
+  } else {
+    // 기본 주문시 결제 탭 활성화
+    guideTabDelivery.classList.remove('delivery-active');
+    guideTabDelivery.classList.remove('active');
+    guideTabPayment.classList.add('active');
+  }
+}
+
+if (paymentMethodBtn && paymentGuideBox) {
+  paymentMethodBtn.addEventListener('click', function() {
+    // 결제방법 안내 박스 토글
+    if (paymentGuideBox.classList.contains('hide')) {
+      // 견적 리스트가 비어있으면 경고
+      if (estimateList.length === 0) {
+        alert('먼저 견적을 계산하고 추가해주세요.');
+        return;
+      }
+      
+      // 결제방법 안내 UI 업데이트
+      updatePaymentGuide();
+      
+      paymentGuideBox.classList.remove('hide');
+      paymentMethodBtn.textContent = '결제방법 닫기';
+    } else {
+      paymentGuideBox.classList.add('hide');
+      paymentMethodBtn.textContent = '결제방법';
+    }
+  });
+}

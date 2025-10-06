@@ -61,42 +61,7 @@
       <!-- 견적 결과 -->
       <section class="result-section">
         <div class="result-card hide" id="resultCard">
-          <div class="result-header">결제 정보</div>
           <div class="result-body">
-            <!-- 총 견적 금액 -->
-            <div class="payment-total">
-              <span class="payment-label">총 결제금액</span>
-              <span class="payment-amount" id="estimatePrice">0</span>원
-            </div>
-            
-            <!-- 결제 방법 안내 -->
-            <div class="payment-method">
-              <div class="payment-method-title">결제 수량 입력</div>
-              <div class="payment-inputs">
-                <div class="payment-input-row" id="pay1000Row">
-                  <span class="input-label">1,000원 단위</span>
-                  <div class="input-box">
-                    <span class="input-desc">수량</span>
-                    <span class="input-value" id="pay1000">0</span>개
-                  </div>
-                </div>
-                <div class="payment-input-row" id="pay100Row">
-                  <span class="input-label">100원 단위</span>
-                  <div class="input-box">
-                    <span class="input-desc">수량</span>
-                    <span class="input-value" id="pay100">0</span>개
-                  </div>
-                </div>
-                <div class="payment-input-row" id="edgeRow">
-                  <span class="input-label">면모서리가공(별도)</span>
-                  <div class="input-box">
-                    <span class="input-desc">수량</span>
-                    <span class="input-value" id="edgeQuantity">0</span>개
-                  </div>
-                </div>
-              </div>
-            </div>
-            
             <!-- 결제 버튼 -->
             <div class="payment-button-area">
               <div id="shippingNotice" class="shipping-notice hide">
@@ -107,11 +72,14 @@
                 <span class="shipping-subtitle">결제시 착불 선택</span>
               </div>
               
-              <!-- 결제방법 버튼 -->
-              <button class="payment-method-btn" id="paymentMethodBtn">결제방법</button>
+              <!-- 상품 총금액 (추가상품 제외) -->
+              <div class="product-total-box hide" id="productTotalBox">
+                <div class="product-total-label">상품 총금액</div>
+                <div class="product-total-amount" id="productTotalAmount">0원</div>
+              </div>
               
-              <!-- 결제방법 안내 UI (버튼 클릭 시 표시) -->
-              <div class="payment-guide-box hide" id="paymentGuideBox">
+              <!-- 결제방법 안내 UI (항상 표시) -->
+              <div class="payment-guide-box" id="paymentGuideBox">
                 <!-- 탭 메뉴 -->
                 <div class="guide-tab-menu">
                   <button class="guide-tab-btn active" id="guideTabPayment">주문시 결제</button>
@@ -137,7 +105,17 @@
                   <div id="guideOverflowNotice" class="guide-overflow-notice hide">
                     <div class="overflow-text">⚠️ 견적 항목이 5개를 초과했습니다. 별도 문의 바랍니다.</div>
                   </div>
+                
                   
+                  <!-- 숨겨진 데이터 저장용 -->
+                  <div id="guide100Qty" class="hide">0</div>
+                  <div id="guideEdgeQty" class="hide">0</div>
+                  <div id="guideEdgePrice" class="hide">0</div>
+
+                  <!-- 면모서리가공 (동적으로 추가됨) -->
+                  <div id="guideEdgeBox"></div>
+
+
                   <!-- 문의자 정보 안내 -->
                   <div class="guide-info-box">
                     <div class="guide-info-text">
@@ -145,14 +123,6 @@
                       <div class="info-example">예) 셀프견적 / 카톡 홍길동 / 1234(연락처 뒷번호) 입력해주세요.</div>
                     </div>
                   </div>
-
-                  <!-- 면모서리가공 (동적으로 추가됨) -->
-                  <div id="guideEdgeBox"></div>
-
-                  <!-- 숨겨진 데이터 저장용 -->
-                  <div id="guide100Qty" class="hide">0</div>
-                  <div id="guideEdgeQty" class="hide">0</div>
-                  <div id="guideEdgePrice" class="hide">0</div>
 
                   <!-- 총 상품 금액 -->
                   <div class="guide-total-section">
@@ -167,6 +137,31 @@
                   </div>
                 </div>
               </div>
+              
+              <!-- 간편 주문 전송 -->
+              <div class="order-send-option" id="orderSendOption">
+                <div class="order-send-guide-text">
+                  💡 <strong>다량 주문 시</strong> 간편 주문 전송을 사용해보세요!<br>
+                  <span class="order-send-guide-subtext">항목을 한 번에 전송할 수 있습니다.</span>
+                </div>
+                <div class="order-send-mode-badge hide" id="orderSendModeBadge">간편 주문 전송</div>
+                <label class="order-send-checkbox">
+                  <input type="checkbox" id="orderSendModeCheckbox">
+                  <span class="checkbox-text">간편 주문 전송 사용</span>
+                </label>
+                
+                <!-- 주문자명 입력 (체크박스 선택 시 표시) -->
+                <div class="order-name-section hide" id="orderNameSection">
+                  <div class="order-name-label">주문자명(수취인명) <span class="required-notice">(실제 주문자명과 일치해야 합니다)</span></div>
+                  <div class="order-name-input-box">
+                    <input type="text" id="orderNameInput" class="order-name-input" placeholder="주문자명 입력">
+                    <button class="order-name-apply-btn" id="orderNameApplyBtn">적용</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 주문 내역 전송 버튼 -->
+              <button class="order-send-btn-new hide" id="orderSendBtn">📦 주문 내역 전송</button>
               
               <a href="https://mkt.shopping.naver.com/link/686b9a522659cd423b21b54f" target="_blank" class="naver-payment-btn">네이버 결제 바로가기</a>
             </div>

@@ -74,8 +74,20 @@
               
               <!-- 상품 총금액 (추가상품 제외) -->
               <div class="product-total-box hide" id="productTotalBox">
-                <div class="product-total-label">상품 총금액</div>
-                <div class="product-total-amount" id="productTotalAmount">0원</div>
+                <div class="product-total-label">
+                  상품 총금액
+                  <span class="discount-badge hide" id="discountBadge">할인적용</span>
+                </div>
+                <div class="product-total-right">
+                  <div class="product-total-original hide" id="productTotalOriginal">0원</div>
+                  <div class="product-total-amount" id="productTotalAmount">0원</div>
+                </div>
+              </div>
+              
+              <!-- 할인 안내 문구 -->
+              <div class="discount-notice hide" id="discountNotice">
+                💡 위 면적 및 수량에 따라 할인적용 되었습니다.<br>
+                <span class="discount-notice-sub">개별 구매 시 초기화 후 다시 견적을 담아주세요.</span>
               </div>
               
               <!-- 결제방법 안내 UI (항상 표시) -->
@@ -106,13 +118,8 @@
                     </div>
                   </div>
 
-                  <!-- 견적 항목 리스트 (동적으로 추가됨, 최대 5개) -->
+                  <!-- 견적 항목 리스트 (동적으로 추가됨) -->
                   <div id="guideEstimateList"></div>
-
-                  <!-- 5개 초과 안내 -->
-                  <div id="guideOverflowNotice" class="guide-overflow-notice hide">
-                    <div class="overflow-text">⚠️ 견적 항목이 5개를 초과했습니다. 별도 문의 바랍니다.</div>
-                  </div>
                 
                   
                   <!-- 숨겨진 데이터 저장용 -->
@@ -138,6 +145,11 @@
                     </div>
                   </div>
                 </div>
+              </div>
+              
+              <!-- 별도 작업 안내 -->
+              <div class="additional-work-notice">
+                📞 절곡, 레이저, 타공 등 별도 작업은 문의 부탁드립니다.
               </div>
               
               <!-- 간편 주문 전송 -->

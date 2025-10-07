@@ -300,8 +300,19 @@ body {
   }
   
   .payment-guide-box {
-    width: 95% !important;
-    max-width: 95% !important;
+    width: 98% !important;
+    max-width: 98% !important;
+    margin: 16px auto !important;
+  }
+  
+  .guide-estimate-row,
+  .guide-estimate-input-box {
+    padding: 12px 8px !important;
+  }
+  
+  .estimate-info-text,
+  .guide-estimate-input-text {
+    font-size: 12px !important;
   }
   
   .product-total-box {
@@ -1052,6 +1063,9 @@ body {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
   animation: slideDown 0.3s ease-out;
   display: block !important;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 @keyframes slideDown {
@@ -1208,6 +1222,8 @@ body {
   border: 1px solid #ddd;
   border-radius: 4px;
   overflow: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .edge-optional-header {
@@ -1244,12 +1260,18 @@ body {
   padding: 14px 16px;
   background: #f9f9f9;
   border-bottom: 1px solid #e5e5e5;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .guide-estimate-input-text {
   font-size: 13px;
   color: #666;
   text-align: left;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 /* 각 견적 행 */
@@ -1258,11 +1280,16 @@ body {
   background: #fff;
   border-bottom: 1px solid #f0f0f0;
   text-align: left;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .estimate-info-line {
   margin-bottom: 8px;
   text-align: left;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .estimate-info-text {
@@ -1271,12 +1298,18 @@ body {
   color: #333;
   text-align: left;
   display: block;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 .estimate-payment-line {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-width: 100%;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .payment-qty-box {

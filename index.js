@@ -230,8 +230,8 @@ function recalculateAllDiscounts() {
     return;
   }
   
-  // 전체 면적 합계
-  const totalArea = estimateList.reduce((acc, item) => acc + item.area, 0);
+  // 전체 면적 합계 (수량 포함)
+  const totalArea = estimateList.reduce((acc, item) => acc + (item.area * item.quantity), 0);
   
   // 전체 수량 합계
   const totalQuantity = estimateList.reduce((acc, item) => acc + item.quantity, 0);

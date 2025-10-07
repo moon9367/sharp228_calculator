@@ -869,10 +869,10 @@ body {
 
 /* 상품 총금액 표시 (추가상품 제외) */
 .product-total-box {
-  width: 90%;
-  max-width: 400px;
+  width: 85%;
+  max-width: 350px;
   margin: 12px auto 10px;
-  padding: 10px 16px;
+  padding: 8px 12px;
   background: linear-gradient(135deg, #f8f9fa, #e9ecef);
   border-radius: 8px;
   border: 1.5px solid #6366f1;
@@ -1076,6 +1076,26 @@ body {
   color: #1976d2;
   text-align: left;
   border-bottom: 1px solid #f0f0f0;
+}
+
+/* 선택 사항 스탬프 스타일 */
+.optional-stamp {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%) rotate(-15deg);
+  padding: 6px 14px;
+  background: transparent;
+  border: 2.5px solid #ff6b6b;
+  color: #ff6b6b;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  opacity: 0.85;
+  z-index: 10;
+  pointer-events: none;
+  box-shadow: 0 2px 4px rgba(255, 107, 107, 0.2);
 }
 
 .guide-estimate-input-box {

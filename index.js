@@ -597,8 +597,10 @@ function updatePaymentGuide() {
   
   const edgeBoxDiv = document.createElement('div');
   edgeBoxDiv.className = 'guide-estimate-main-box';
+  edgeBoxDiv.style.position = 'relative';
   edgeBoxDiv.innerHTML = `
     <div class="edge-optional-header">추가상품 선택</div>
+    <div class="optional-stamp">선택 사항</div>
     <div class="guide-estimate-row">
       <div class="estimate-info-line">
         <span class="estimate-info-text">면모서리가공 1장</span>

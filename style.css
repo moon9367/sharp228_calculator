@@ -329,6 +329,20 @@ body {
   .main-header {
     padding: 20px 5px;
   }
+  
+  .order-send-guide-text {
+    font-size: 0.72rem !important;
+    padding: 10px 10px !important;
+    line-height: 1.5 !important;
+  }
+  
+  .order-send-guide-text strong {
+    font-size: 0.75rem !important;
+  }
+  
+  .order-send-guide-subtext {
+    font-size: 0.65rem !important;
+  }
 }
 
 /* 결제 정보 스타일 */
@@ -821,20 +835,20 @@ body {
   padding: 12px 14px;
   margin-bottom: 16px;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
   color: #1e40af;
-  line-height: 1.7;
+  line-height: 1.6;
 }
 
 .order-send-guide-text strong {
   color: #1e3a8a;
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 0.85rem;
 }
 
 .order-send-guide-subtext {
   display: block;
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   color: #3b82f6;
   margin-top: 6px;
   font-weight: 500;

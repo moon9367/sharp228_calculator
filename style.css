@@ -1,7 +1,18 @@
 @import "variables.css";
 @import "reset.css";
 
+/* 전역 box-sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 /* 전체 레이아웃 */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
 body {
   background: #f8f9ff; /* 연한 보라빛 배경 */
   font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
@@ -13,12 +24,14 @@ body {
 
 .container {
   max-width: 900px;
+  width: 100%;
   margin: 20px auto;
-  padding: 0;
+  padding: 0 10px;
   background: transparent;
   border-radius: 0;
   box-shadow: none;
   text-align: center;
+  box-sizing: border-box;
 }
 
 .main-header {
@@ -253,10 +266,12 @@ body {
 /* 반응형 */
 @media (max-width: 600px) {
   .container {
-    padding: 10px 2px;
+    padding: 10px 5px;
     border-radius: 0;
     box-shadow: none;
     text-align: center;
+    width: 100%;
+    max-width: 100%;
   }
   .main-header {
     font-size: 1.2rem;
@@ -271,10 +286,37 @@ body {
   }
   .result-card {
     padding: 18px 6px;
-    min-width: 0;
+    min-width: 0 !important;
     max-width: 100%;
+    width: 100%;
     align-items: center;
     text-align: center;
+  }
+  
+  .estimate-card {
+    min-width: 0 !important;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .payment-guide-box {
+    width: 95% !important;
+    max-width: 95% !important;
+  }
+  
+  .product-total-box {
+    width: 90% !important;
+    max-width: 90% !important;
+  }
+  
+  .order-send-btn-new,
+  .order-name-apply-btn {
+    width: 90% !important;
+    max-width: 90% !important;
+  }
+  
+  .main-header {
+    padding: 20px 5px;
   }
 }
 

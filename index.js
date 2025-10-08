@@ -1,4 +1,3 @@
-// 표면 종류별 샘플 이미지 매핑
 const surfaceImages = {
   '2B': 'sample_2b.jpg',
   'HL': 'sample_hl.jpg',
@@ -7,7 +6,7 @@ const surfaceImages = {
   'GOL_HL': 'sample_goldhl.jpg',
   'GOL_Mirror': 'sample_goldmirror.jpg',
 };
-//555
+
 const typeSelect = document.getElementById('type');
 const sampleImage = document.getElementById('sampleImage');
 const sampleImageBox = document.querySelector('.sample-image-box');
@@ -18,10 +17,8 @@ const heightInput = document.getElementById('height');
 const submitBtn = document.querySelector('.submit-btn');
 const resultCard = document.getElementById('resultCard');
 
-// 견적 리스트 누적 영역 (HTML에서 이미 정의됨)
 const estimateListBox = document.getElementById('estimateListBox');
 
-// 표면별 사용 가능한 두께 정의
 const surfaceThickness = {
   'HL': ['0.8T', '1.0T', '1.2T', '1.5T', '2.0T'],
   '2B': ['0.8T', '1.0T', '1.2T', '1.5T', '2.0T'],
@@ -31,16 +28,13 @@ const surfaceThickness = {
   'GOL_Mirror': ['1.2T']
 };
 
-// 두께 옵션 업데이트 함수
 function updateThicknessOptions(surfaceType) {
   const thicknessSelect = document.getElementById('thickness');
   const currentThickness = thicknessSelect.value;
   const availableThickness = surfaceThickness[surfaceType] || [];
   
-  // 기존 옵션 제거
   thicknessSelect.innerHTML = '<option value="">두께 선택</option>';
   
-  // 새로운 옵션 추가
   availableThickness.forEach(thickness => {
     const option = document.createElement('option');
     option.value = thickness;
@@ -48,47 +42,38 @@ function updateThicknessOptions(surfaceType) {
     thicknessSelect.appendChild(option);
   });
   
-  // 기존 선택값이 새로운 옵션에 있으면 유지
   if (currentThickness && availableThickness.includes(currentThickness)) {
     thicknessSelect.value = currentThickness;
   }
 }
 
-// 표면과 두께 조합 유효성 검사
 function validateSurfaceThickness(surface, thickness) {
   const availableThickness = surfaceThickness[surface] || [];
   return availableThickness.includes(thickness);
 }
 
-// 진입 시 샘플 이미지 박스와 이미지 모두 숨김
 sampleImageBox.classList.add('hide');
 sampleImage.classList.add('hide');
 
-// 표면종류 선택 이벤트 리스너
 typeSelect.addEventListener('change', function() {
   const selectedType = this.value;
   
   if (selectedType && selectedType !== 'a') {
-    // 샘플 이미지 업데이트
     if (surfaceImages[selectedType]) {
       sampleImage.src = surfaceImages[selectedType];
       sampleImageBox.classList.remove('hide');
       sampleImage.classList.remove('hide');
     }
     
-    // 두께 옵션 업데이트 (기존 선택 유지)
     updateThicknessOptions(selectedType);
   } else {
-    // 샘플 이미지 숨김
     sampleImageBox.classList.add('hide');
     sampleImage.classList.add('hide');
     
-    // 두께 옵션 초기화
     thicknessSelect.innerHTML = '<option value="">두께 선택</option>';
   }
 });
 
-// 팝업 관련 함수들
 function showPopup() {
   const popup = document.getElementById('popup');
   popup.classList.remove('hide');
@@ -99,28 +84,21 @@ function closePopup() {
   popup.classList.add('hide');
 }
 
-// 최소 재단 체크 함수
 function checkMinimumCutting(width, height) {
   return width < 50 || height < 50;
 }
 
-// 경동택배 착불 발송 체크 함수
 function checkLargeSize(width, height) {
-  // 1. 한 면이 900mm 이상인 경우
-  // 2. 가로와 세로 모두 650mm를 초과하는 경우 (700*700, 800*800 등)
   return width >= 900 || height >= 900 || (width > 650 && height > 650);
 }
 
-// 경동택배 안내 표시/숨김 함수
 function updateShippingNotice() {
   const shippingNotice = document.getElementById('shippingNotice');
   const guideTabDelivery = document.getElementById('guideTabDelivery');
   const totalQuantity = estimateList.reduce((acc, cur) => acc + cur.quantity, 0);
   
-  // 이전 상태 저장
   const wasHidden = shippingNotice.classList.contains('hide');
   
-  // 견적 리스트에서 경동택배 조건에 해당하는 항목이 있는지 체크
   const hasLargeSize = estimateList.some(item => 
     item.width >= 900 || item.height >= 900 || (item.width > 650 && item.height > 650)
   );
@@ -128,20 +106,17 @@ function updateShippingNotice() {
   if (hasLargeSize && totalQuantity > 0) {
     shippingNotice.classList.remove('hide');
     
-    // 착불 탭 빨간색 강조
     if (guideTabDelivery) {
       guideTabDelivery.style.border = '2px solid #e63946';
       guideTabDelivery.style.color = '#e63946';
     }
     
-    // 착불로 변경될 때만 팝업 표시 (이전에 숨겨져 있었다면)
     if (wasHidden) {
       showDeliveryWarningPopup();
     }
   } else {
     shippingNotice.classList.add('hide');
     
-    // 착불 탭 스타일 초기화
     if (guideTabDelivery) {
       guideTabDelivery.style.border = '';
       guideTabDelivery.style.color = '';
@@ -149,7 +124,6 @@ function updateShippingNotice() {
   }
 }
 
-// 실제 견적 금액 산출 공식 (예시: H/L 1.2T, 300x500, 1개 = 20,800원)
 function calculateEstimate() {
   const width = parseInt(widthInput.value, 10);
   const height = parseInt(heightInput.value, 10);
@@ -161,7 +135,6 @@ function calculateEstimate() {
     return null;
   }
 
-  // 단가 테이블 (예시)
   const unitPriceTable = {
     '2B': { '0.8': 223, '1': 271, '1.2': 317, '1.5': 388, '2': 506 },
     'HL': { '0.8': 244, '1': 295, '1.2': 346, '1.5': 420, '2': 548 },
@@ -171,12 +144,10 @@ function calculateEstimate() {
     'GOL_Mirror': { '1.2': 627 },
   };
 
-  // 면적 계산 (50mm 단위 올림)
   const calcWidth = Math.ceil(width / 50) * 50;
   const calcHeight = Math.ceil(height / 50) * 50;
-  const area = (calcWidth * calcHeight) / 2500; // 2500 = 50x50
+  const area = (calcWidth * calcHeight) / 2500;
 
-  // 단가
   let unitPrice = 0;
   if (unitPriceTable[type] && unitPriceTable[type][thickness]) {
     unitPrice = unitPriceTable[type][thickness];
@@ -184,21 +155,17 @@ function calculateEstimate() {
     return null;
   }
 
-  // 판재비 (100원 단위 올림, 최소 1,000원)
   let plateCost = Math.ceil((unitPrice * area) / 100) * 100;
   if (plateCost < 1000) plateCost = 1000;
 
-  // 재단비 (판재비 10,000원 미만이면 1,000원, 이상이면 0원)
   let cutCost = plateCost < 10000 ? 1000 : 0;
 
-  // 기본 금액
   let baseTotal = (plateCost + cutCost) * quantity;
   
-  // 실제 면적 저장 (할인은 나중에 전체 계산)
   const actualArea = width * height;
   
   return {
-    total: baseTotal, // 일단 기본 금액으로 저장
+    total: baseTotal,
     baseTotal: baseTotal,
     plateCost,
     cutCost,
@@ -208,55 +175,43 @@ function calculateEstimate() {
     width,
     height,
     area: actualArea,
-    discount: null, // 할인은 나중에 전체적으로 계산
+    discount: null,
     sampleImg: surfaceImages[type] || 'sample_default.jpg',
   };
 }
 
-// 금액 절사/반올림 함수 (10,000원 이하: 100원 단위 절사, 10,001원 이상: 1,000원 단위 반올림)
 function applyRounding(price) {
   if (price <= 10000) {
-    // 100원 단위 절사 (내림)
     return Math.floor(price / 100) * 100;
   } else {
-    // 1,000원 단위 반올림
     return Math.round(price / 1000) * 1000;
   }
 }
 
-// 전체 주문 할인 재계산 함수
 function recalculateAllDiscounts() {
   if (estimateList.length === 0) {
     return;
   }
   
-  // 전체 면적 합계 (수량 포함)
   const totalArea = estimateList.reduce((acc, item) => acc + (item.area * item.quantity), 0);
   
-  // 전체 수량 합계
   const totalQuantity = estimateList.reduce((acc, item) => acc + item.quantity, 0);
   
-  // 전체 기본 금액 합계
   const totalBasePrice = estimateList.reduce((acc, item) => acc + item.baseTotal, 0);
   
   let discountType = 'none';
   let discountRate = 0;
   
-  // A. 착불 할인 (전체 면적 기준 - 3단계 차등 할인)
   if (totalArea >= 1500000) {
-    // 1000×1500 이상 (1,500,000mm² 이상) - 13% 고정
     discountType = 'delivery';
     discountRate = 13;
   } else if (totalArea >= 1200000) {
-    // 1,200,000 ~ 1,499,999mm² (약 1095×1095 ~ 1224×1224)
     discountType = 'delivery';
     discountRate = 10;
   } else if (totalArea >= 1000000) {
-    // 1000×1000 ~ 1,199,999mm² (1,000,000 ~ 1,199,999mm²)
     discountType = 'delivery';
     discountRate = 5;
   }
-  // B. 선불 할인 (전체 수량 기준)
   else if (totalQuantity >= 10 && totalBasePrice >= 50000) {
     discountType = 'prepay';
     
@@ -269,20 +224,16 @@ function recalculateAllDiscounts() {
     }
   }
   
-  // 모든 항목에 할인 적용
   estimateList.forEach(item => {
     if (discountType !== 'none') {
       let discountedPrice;
       
       if (discountType === 'delivery') {
-        // 착불 할인: (기본금액 / 3) × 2.6
         discountedPrice = (item.baseTotal / 3) * 2.6;
       } else {
-        // 선불 할인
         discountedPrice = item.baseTotal * (1 - discountRate / 100);
       }
       
-      // 절사 적용
       const finalPrice = applyRounding(discountedPrice);
       
       item.discount = {
@@ -295,14 +246,12 @@ function recalculateAllDiscounts() {
       };
       item.total = finalPrice;
     } else {
-      // 할인 없음 - 기본 금액에도 반올림 적용
       item.discount = null;
       item.total = applyRounding(item.baseTotal);
     }
   });
 }
 
-// 개별 항목 할인 계산 함수 (사용 안 함, 호환성 유지)
 function calculateDiscount(basePrice, quantity, area) {
   return {
     type: 'none',
@@ -314,9 +263,7 @@ function calculateDiscount(basePrice, quantity, area) {
   };
 }
 
-// 결제 안내 계산 함수
 function getPaymentGuide(price) {
-  // 각 항목별로 1000원 단위와 100원 단위를 나눠서 계산
   let total1000 = 0;
   let total100 = 0;
   
@@ -324,7 +271,6 @@ function getPaymentGuide(price) {
     const itemTotal = item.total;
     total1000 += Math.floor(itemTotal / 1000);
     
-    // 10,000원 미만인 항목만 100원 단위 계산
     if (itemTotal < 10000) {
       total100 += Math.floor((itemTotal % 1000) / 100);
     }
@@ -333,14 +279,11 @@ function getPaymentGuide(price) {
   return { pay1000: total1000, pay100: total100 };
 }
 
-// 포장비 계산 함수 (긴 변 + 짧은 변 조합, 100mm 단위)
-// ⚠️ 착불 발송 조건(900mm 이상 OR 650×650 초과)일 때 포장비 발동
 function calculatePackagingFee() {
   if (estimateList.length === 0) {
     return 0;
   }
   
-  // 착불 발송 조건 체크 (한 면이 900mm 이상 OR 가로×세로 모두 650mm 초과)
   const hasLargeSize = estimateList.some(item => 
     item.width >= 900 || item.height >= 900 || (item.width > 650 && item.height > 650)
   );
@@ -348,7 +291,6 @@ function calculatePackagingFee() {
     return 0;
   }
   
-  // 각 항목의 포장비를 계산하여 최대값을 반환
   let maxPackagingFee = 0;
   
   estimateList.forEach(item => {
@@ -357,10 +299,6 @@ function calculatePackagingFee() {
     
     let fee = 0;
     
-    // 포장비 테이블로 계산 (0원인 경우는 박스 포장 가능)
-    // 2차원 테이블: 긴 변 × 짧은 변 (100mm 단위 세분화)
-    // 짧은 변 구간 인덱스 (0: ≤100, 1: 100~199, 2: 200~299, 3: 300~399, 4: 400~499, 5: 500~599, 
-    //                     6: 600~699, 7: 700~799, 8: 800~899, 9: 900~999, 10: 1000~1099, 11: 1100~1200)
     let shortIndex = 0;
     if (shorterSide >= 1100) shortIndex = 11;
     else if (shorterSide >= 1000) shortIndex = 10;
@@ -375,8 +313,6 @@ function calculatePackagingFee() {
     else if (shorterSide >= 100) shortIndex = 1;
     else shortIndex = 0;
     
-    // 긴 변에 따른 포장비 테이블 (100mm 단위 세분화)
-    // 배열 순서: [≤100, 100~199, 200~299, 300~399, 400~499, 500~599, 600~699, 700~799, 800~899, 900~999, 1000~1099, 1100~1200]
     if (longerSide < 600) {
       const fees = [0, 0, 0, 0, 0, 0, 3000, 3000, 3000, 5000, 5000, 5000];
       fee = fees[shortIndex];
@@ -417,7 +353,6 @@ function calculatePackagingFee() {
       const fees = [8000, 10000, 12000, 15000, 20000, 20000, 20000, 20000, 20000, 20000, 20000, 20000];
       fee = fees[shortIndex];
     } else {
-      // 최대 사이즈 초과
       const fees = [8000, 10000, 12000, 18000, 20000, 20000, 20000, 20000, 20000, 20000, 20000, 20000];
       fee = fees[shortIndex];
     }
@@ -430,36 +365,29 @@ function calculatePackagingFee() {
   return maxPackagingFee;
 }
 
-// 최종 총 금액 계산 함수 (상품 금액 + 포장비 + 면모서리가공)
 function calculateFinalTotal(productTotal, totalQuantity) {
   const packagingFee = calculatePackagingFee();
   const edgeFee = totalQuantity * 500;
   return productTotal + packagingFee + edgeFee;
 }
 
-// 누적 견적 데이터 저장
 let estimateList = [];
 
-// 주문 전송 모드 상태
 let orderSendMode = false;
 let orderSenderName = '';
 
-// 모든 견적 카드 UI 업데이트 함수
 function updateAllEstimateCards() {
   const estimateListBox = document.getElementById('estimateListBox');
   if (!estimateListBox) return;
   
-  // 기존 카드 모두 제거
   estimateListBox.innerHTML = '';
   
-  // 각 견적 항목에 대해 카드 생성
   estimateList.forEach((estimate, index) => {
     const card = createEstimateCard(estimate, index);
     estimateListBox.appendChild(card);
   });
 }
 
-// 개별 견적 카드 생성 함수
 function createEstimateCard(estimate, index) {
   const card = document.createElement('div');
   card.className = 'estimate-list-card';
@@ -474,12 +402,10 @@ function createEstimateCard(estimate, index) {
   card.style.minWidth = '320px';
   card.style.maxWidth = '420px';
 
-  // 정보
   const info = document.createElement('div');
   info.style.flex = '1';
   info.style.textAlign = 'left';
   
-  // 할인 정보가 있는 경우
   let priceHTML = '';
   if (estimate.discount && estimate.discount.hasDiscount) {
     priceHTML = `
@@ -501,7 +427,6 @@ function createEstimateCard(estimate, index) {
   `;
   card.appendChild(info);
 
-  // X(삭제) 버튼
   const delBtn = document.createElement('button');
   delBtn.textContent = '✕';
   delBtn.style.background = 'none';
@@ -512,37 +437,28 @@ function createEstimateCard(estimate, index) {
   delBtn.style.marginLeft = '8px';
   
   delBtn.onclick = function() {
-    // 배열에서 해당 항목 제거
     estimateList.splice(index, 1);
     
-    // 전체 할인 재계산
     recalculateAllDiscounts();
     
-    // 모든 카드 UI 갱신
     updateAllEstimateCards();
     
-    // 총 금액 재계산
     const newTotal = estimateList.reduce((acc, cur) => acc + cur.total, 0);
     const newQuantity = estimateList.reduce((acc, cur) => acc + cur.quantity, 0);
     
-    // 경동택배 안내 업데이트
     updateShippingNotice();
     
     if (newTotal === 0) {
-      // 모든 항목이 삭제된 경우 결과 카드 숨기기
       resultCard.classList.add('hide');
       return;
     }
     
-    // 주문 전송 모드 총금액 업데이트
     updateOrderTotalDisplay();
     
-    // 결제방법 UI 업데이트
     if (paymentGuideBox) {
       updatePaymentGuide();
     }
     
-    // 견적 삭제 시 주문 전송 버튼 재활성화
     reactivateOrderSendButton();
   };
   card.appendChild(delBtn);
@@ -550,7 +466,6 @@ function createEstimateCard(estimate, index) {
   return card;
 }
 
-// 계산 & 추가하기 버튼 클릭 이벤트
 submitBtn.addEventListener('click', function() {
   const type = typeSelect.value;
   const thickness = thicknessSelect.value;
@@ -563,13 +478,11 @@ submitBtn.addEventListener('click', function() {
     return;
   }
 
-  // 표면과 두께 조합 유효성 검사
   if (!validateSurfaceThickness(type, thickness)) {
     alert('선택하신 표면에서는 해당 두께를 사용할 수 없습니다.\n올바른 두께를 선택해주세요.');
     return;
   }
 
-  // 최소 재단 체크
   if (checkMinimumCutting(width, height)) {
     showPopup();
     return;
@@ -581,44 +494,31 @@ submitBtn.addEventListener('click', function() {
     return;
   }
 
-  // 견적 추가
   estimateList.push(estimate);
 
-  // 전체 할인 재계산
   recalculateAllDiscounts();
   
-  // 모든 카드 UI 갱신
   updateAllEstimateCards();
 
-  // 총합 계산
   const totalSum = estimateList.reduce((acc, cur) => acc + cur.total, 0);
   const totalQuantity = estimateList.reduce((acc, cur) => acc + cur.quantity, 0);
   const { pay1000, pay100 } = getPaymentGuide(totalSum);
 
-  // 경동택배 안내 업데이트
   updateShippingNotice();
 
-  // 결과 카드 표시 (내용 없이 버튼 영역만)
   resultCard.classList.remove('hide');
 
-  // 주문 전송 모드 총금액 업데이트
   updateOrderTotalDisplay();
 
-  // 결제방법 UI 업데이트
   if (paymentGuideBox) {
     updatePaymentGuide();
   }
   
-  // 견적 추가 시 주문 전송 버튼 재활성화
   reactivateOrderSendButton();
-
-  // 결제 안내문은 더 이상 사용하지 않음 (새로운 UI로 대체)
 });
 
-// 최초 진입 시 결과 카드 숨김
 resultCard.classList.add('hide');
 
-// 결제방법 버튼 클릭 이벤트
 const paymentMethodBtn = document.getElementById('paymentMethodBtn');
 const paymentGuideBox = document.getElementById('paymentGuideBox');
 const productTotalBox = document.getElementById('productTotalBox');
@@ -626,7 +526,6 @@ const productTotalAmount = document.getElementById('productTotalAmount');
 const guideTabPayment = document.getElementById('guideTabPayment');
 const guideTabDelivery = document.getElementById('guideTabDelivery');
 
-// 결제방법 안내 UI 업데이트 함수
 function updatePaymentGuide() {
   const guideEstimateList = document.getElementById('guideEstimateList');
   const guide100Qty = document.getElementById('guide100Qty');
@@ -636,17 +535,14 @@ function updatePaymentGuide() {
   const guideEdgeQty = document.getElementById('guideEdgeQty');
   const guideEdgePrice = document.getElementById('guideEdgePrice');
   
-  // 견적 리스트가 비어있으면 초기화
   if (estimateList.length === 0) {
     guideEstimateList.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">견적 항목이 없습니다.</div>';
     guide100Qty.textContent = '0';
     
-    // 면모서리가공 박스 초기화
     if (guideEdgeBox) guideEdgeBox.innerHTML = '';
     if (guideEdgeQty) guideEdgeQty.textContent = '0';
     if (guideEdgePrice) guideEdgePrice.textContent = '0원';
     
-    // 상품 총금액 숨김
     if (productTotalBox) productTotalBox.classList.add('hide');
     if (productTotalAmount) productTotalAmount.textContent = '0원';
     
@@ -655,20 +551,15 @@ function updatePaymentGuide() {
     return;
   }
   
-  // 견적 리스트 초기화
   guideEstimateList.innerHTML = '';
   
-  // 총 금액과 수량 계산
   const totalSum = estimateList.reduce((acc, cur) => acc + cur.total, 0);
   const totalQuantity = estimateList.reduce((acc, cur) => acc + cur.quantity, 0);
   const { pay1000, pay100 } = getPaymentGuide(totalSum);
   
-  // 하나의 큰 입력창 생성
   const mainBoxDiv = document.createElement('div');
   mainBoxDiv.className = 'guide-estimate-main-box';
   
-  // 상단 헤더
-  // 공통 안내 섹션 (모드에 따라 다른 텍스트 표시)
   const instructionText = orderSendMode 
     ? '가로X세로 (mm) 에 주문자명을 입력하세요.'
     : '가로X세로 (mm) / 상품 수량(개)를 입력해주세요.';
@@ -679,13 +570,10 @@ function updatePaymentGuide() {
     </div>
   `;
   
-  // 주문 전송 모드 체크
   if (orderSendMode) {
-    // 주문 전송 모드: 전체 항목을 하나로 통합
     const totalPay1000 = Math.floor(totalSum / 1000);
     const displayName = orderSenderName || '주문자명 미입력';
     
-    // 첫 번째 항목의 표면종류 가져오기
     const firstItem = estimateList.length > 0 ? estimateList[0] : null;
     const surfaceType = firstItem ? `${firstItem.type} ${firstItem.thickness}T` : '';
     
@@ -705,12 +593,9 @@ function updatePaymentGuide() {
       </div>
     `;
   } else {
-    // 기존 방식: 각 항목별로 표시
     estimateList.forEach((item, index) => {
-      // 각 항목의 금액을 1,000원 단위로 분해
       const itemPay1000 = Math.floor(item.total / 1000);
       
-      // 견적 정보와 1,000원 단위를 한 행에 표시
       mainHTML += `
         <div class="guide-estimate-row">
           <div class="estimate-info-line">
@@ -732,7 +617,6 @@ function updatePaymentGuide() {
   mainBoxDiv.innerHTML = mainHTML;
   guideEstimateList.appendChild(mainBoxDiv);
   
-  // 100원 단위 전체 합계 (있을 경우만)
   if (pay100 > 0) {
     const hundredBoxDiv = document.createElement('div');
     hundredBoxDiv.className = 'guide-estimate-main-box';
@@ -755,7 +639,6 @@ function updatePaymentGuide() {
     guideEstimateList.appendChild(hundredBoxDiv);
   }
   
-  // 포장비 추가 (착불일 때만)
   const packagingFee = calculatePackagingFee();
   if (packagingFee > 0) {
     const packagingBoxDiv = document.createElement('div');
@@ -779,7 +662,6 @@ function updatePaymentGuide() {
     guideEstimateList.appendChild(packagingBoxDiv);
   }
   
-  // 면모서리가공 박스 생성
   const edgeTotalPrice = totalQuantity * 500;
   
   const edgeBoxDiv = document.createElement('div');
@@ -808,13 +690,10 @@ function updatePaymentGuide() {
     guideEdgeBox.appendChild(edgeBoxDiv);
   }
   
-  // 수량 정보 업데이트 (숨겨진 요소)
   guide100Qty.textContent = pay100;
   if (guideEdgeQty) guideEdgeQty.textContent = totalQuantity;
   if (guideEdgePrice) guideEdgePrice.textContent = edgeTotalPrice.toLocaleString() + '원';
   
-  // 상품 총금액 표시 업데이트 (추가상품 제외)
-  // 할인 여부 확인
   const hasDiscount = estimateList.some(item => item.discount && item.discount.hasDiscount);
   const baseTotalSum = estimateList.reduce((acc, cur) => acc + (cur.baseTotal || cur.total), 0);
   
@@ -822,22 +701,18 @@ function updatePaymentGuide() {
     productTotalAmount.textContent = totalSum.toLocaleString() + '원';
   }
   
-  // 할인 정보 표시
   const discountBadge = document.getElementById('discountBadge');
   const productTotalOriginal = document.getElementById('productTotalOriginal');
   const discountNotice = document.getElementById('discountNotice');
   
   if (hasDiscount) {
-    // 할인 적용
     if (discountBadge) discountBadge.classList.remove('hide');
     if (productTotalOriginal) {
       productTotalOriginal.textContent = baseTotalSum.toLocaleString() + '원';
       productTotalOriginal.classList.remove('hide');
     }
-    // 할인 안내 문구 표시
     if (discountNotice) discountNotice.classList.remove('hide');
   } else {
-    // 할인 없음
     if (discountBadge) discountBadge.classList.add('hide');
     if (productTotalOriginal) productTotalOriginal.classList.add('hide');
     if (discountNotice) discountNotice.classList.add('hide');
@@ -847,25 +722,20 @@ function updatePaymentGuide() {
     productTotalBox.classList.remove('hide');
   }
   
-  // 최종 총 금액 계산 (별도 함수 사용)
   const finalTotal = calculateFinalTotal(totalSum, totalQuantity);
   
   guideTotalQty.textContent = `총 수량 ${totalQuantity}개`;
   guideTotalPrice.textContent = finalTotal.toLocaleString() + '원';
   
-  // 경동택배 조건 확인 (견적 리스트에서)
   const hasLargeSize = estimateList.some(item => 
     item.width >= 900 || item.height >= 900 || (item.width > 650 && item.height > 650)
   );
   
-  // 탭 활성화 상태 업데이트
   if (hasLargeSize && estimateList.length > 0) {
-    // 착불 조건 충족 시 착불 탭 활성화 (빨간색)
     guideTabPayment.classList.remove('active');
     guideTabDelivery.classList.remove('active');
     guideTabDelivery.classList.add('delivery-active');
   } else {
-    // 기본 주문시 결제 탭 활성화
     guideTabDelivery.classList.remove('delivery-active');
     guideTabDelivery.classList.remove('active');
     guideTabPayment.classList.add('active');
@@ -874,15 +744,12 @@ function updatePaymentGuide() {
 
 if (paymentMethodBtn && paymentGuideBox) {
   paymentMethodBtn.addEventListener('click', function() {
-    // 결제방법 안내 박스 토글
     if (paymentGuideBox.classList.contains('hide')) {
-      // 견적 리스트가 비어있으면 경고
       if (estimateList.length === 0) {
         alert('먼저 견적을 계산하고 추가해주세요.');
         return;
       }
       
-      // 결제방법 안내 UI 업데이트
       updatePaymentGuide();
       
       paymentGuideBox.classList.remove('hide');
@@ -894,13 +761,11 @@ if (paymentMethodBtn && paymentGuideBox) {
   });
 }
 
-// 주문 전송 방식 관련 이벤트
 const orderSendModeCheckbox = document.getElementById('orderSendModeCheckbox');
 const orderNameSection = document.getElementById('orderNameSection');
 const orderNameInput = document.getElementById('orderNameInput');
 const orderNameApplyBtn = document.getElementById('orderNameApplyBtn');
 
-// 체크박스 토글
 if (orderSendModeCheckbox) {
   orderSendModeCheckbox.addEventListener('change', function() {
     const orderSendModeBadge = document.getElementById('orderSendModeBadge');
@@ -909,18 +774,15 @@ if (orderSendModeCheckbox) {
       orderNameSection.classList.remove('hide');
       orderSendMode = true;
       
-      // 간편 주문 전송 뱃지 표시
       if (orderSendModeBadge) {
         orderSendModeBadge.classList.remove('hide');
       }
       
-      // 주문 전송 버튼 표시
       const orderSendBtn = document.getElementById('orderSendBtn');
       if (orderSendBtn) {
         orderSendBtn.classList.remove('hide');
       }
       
-      // 총금액 표시
       updateOrderTotalDisplay();
     } else {
       orderNameSection.classList.add('hide');
@@ -928,37 +790,30 @@ if (orderSendModeCheckbox) {
       orderSenderName = '';
       orderNameInput.value = '';
       
-      // 간편 주문 전송 뱃지 숨김
       if (orderSendModeBadge) {
         orderSendModeBadge.classList.add('hide');
       }
       
-      // 주문 전송 버튼 숨김
       const orderSendBtn = document.getElementById('orderSendBtn');
       if (orderSendBtn) {
         orderSendBtn.classList.add('hide');
       }
       
-      // 총금액 표시 숨김
       const orderTotalDisplay = document.getElementById('orderTotalDisplay');
       if (orderTotalDisplay) {
         orderTotalDisplay.classList.add('hide');
       }
     }
     
-    // 결제방법 UI 업데이트
     if (paymentGuideBox) {
       updatePaymentGuide();
     }
   });
 }
 
-// 총금액 표시 업데이트 함수 (더 이상 사용하지 않음)
 function updateOrderTotalDisplay() {
-  // 중복 표시 제거로 인해 빈 함수로 유지
 }
 
-// 주문자명 적용 버튼
 if (orderNameApplyBtn) {
   orderNameApplyBtn.addEventListener('click', function() {
     const name = orderNameInput.value.trim();
@@ -969,20 +824,16 @@ if (orderNameApplyBtn) {
     
     orderSenderName = name;
     
-    // 커스텀 팝업 표시
     showCustomPopup('위 내용으로 결제 후 주문 내역 전송을 해주세요<br><span style="font-size: 0.95rem; opacity: 0.95; margin-top: 8px; display: inline-block;">(오전송 방지)</span>', 5000);
     
-    // 결제방법 UI 업데이트
     if (paymentGuideBox) {
       updatePaymentGuide();
     }
     
-    // 주문자명 변경 시 주문 전송 버튼 재활성화
     reactivateOrderSendButton();
   });
 }
 
-// 주문 전송 버튼 재활성화 함수
 function reactivateOrderSendButton() {
   const orderSendBtn = document.getElementById('orderSendBtn');
   if (orderSendBtn && orderSendBtn.disabled) {
@@ -994,7 +845,6 @@ function reactivateOrderSendButton() {
   }
 }
 
-// 주문 전송 버튼 클릭 이벤트
 const orderSendBtn = document.getElementById('orderSendBtn');
 if (orderSendBtn) {
   orderSendBtn.addEventListener('click', async function() {
@@ -1009,7 +859,6 @@ if (orderSendBtn) {
     }
     
     if (!orderSenderName) {
-      // 주문자명 입력 섹션 강조 애니메이션
       const orderNameSection = document.getElementById('orderNameSection');
       if (orderNameSection) {
         orderNameSection.classList.add('highlight-shake');
@@ -1021,19 +870,16 @@ if (orderSendBtn) {
       return;
     }
     
-    // 전송 전 확인
     const confirmSend = confirm('주문 내역을 전송하시겠습니까?');
     if (!confirmSend) {
       return;
     }
     
-    // 버튼 비활성화 (중복 전송 방지)
     orderSendBtn.disabled = true;
     orderSendBtn.textContent = '📤 전송 중...';
     orderSendBtn.style.opacity = '0.6';
     orderSendBtn.style.cursor = 'not-allowed';
     
-    // 총 금액과 수량 계산
     const totalSum = estimateList.reduce((acc, cur) => acc + cur.total, 0);
     const totalQuantity = estimateList.reduce((acc, cur) => acc + cur.quantity, 0);
     const { pay1000, pay100 } = getPaymentGuide(totalSum);
@@ -1050,19 +896,15 @@ if (orderSendBtn) {
       packagingFee: packagingFee
     };
     
-    // Discord로 전송
     const success = await sendToDiscord(orderData);
     
-    // 전송 결과에 따라 버튼 상태 변경
     if (success) {
-      // 전송 성공 시 버튼 비활성화 (무한 전송 방지)
       orderSendBtn.disabled = true;
       orderSendBtn.textContent = '✅ 주문이 전송 되었습니다';
       orderSendBtn.style.opacity = '0.5';
       orderSendBtn.style.cursor = 'not-allowed';
       orderSendBtn.style.background = 'linear-gradient(135deg, #9ca3af, #6b7280)';
     } else {
-      // 전송 실패 시 버튼 원상복구
       orderSendBtn.disabled = false;
       orderSendBtn.textContent = '📦 주문 내역 전송';
       orderSendBtn.style.opacity = '1';
@@ -1072,15 +914,12 @@ if (orderSendBtn) {
   });
 }
 
-// 커스텀 팝업 표시 함수
 function showCustomPopup(message, duration = 3000) {
-  // 기존 팝업이 있으면 제거
   const existingPopup = document.querySelector('.custom-popup');
   if (existingPopup) {
     existingPopup.remove();
   }
   
-  // 팝업 생성
   const popup = document.createElement('div');
   popup.className = 'custom-popup';
   popup.innerHTML = `
@@ -1092,12 +931,10 @@ function showCustomPopup(message, duration = 3000) {
   
   document.body.appendChild(popup);
   
-  // 애니메이션을 위한 약간의 딜레이
   setTimeout(() => {
     popup.classList.add('show');
   }, 10);
   
-  // 지정된 시간 후 제거
   setTimeout(() => {
     popup.classList.remove('show');
     setTimeout(() => {
@@ -1106,15 +943,12 @@ function showCustomPopup(message, duration = 3000) {
   }, duration);
 }
 
-// 착불 경고 팝업 표시 함수
 function showDeliveryWarningPopup() {
-  // 기존 팝업이 있으면 제거
   const existingPopup = document.querySelector('.custom-popup');
   if (existingPopup) {
     existingPopup.remove();
   }
   
-  // 팝업 생성
   const popup = document.createElement('div');
   popup.className = 'custom-popup';
   popup.innerHTML = `
@@ -1128,12 +962,10 @@ function showDeliveryWarningPopup() {
   
   document.body.appendChild(popup);
   
-  // 애니메이션을 위한 약간의 딜레이
   setTimeout(() => {
     popup.classList.add('show');
   }, 10);
   
-  // 3초 후 제거
   setTimeout(() => {
     popup.classList.remove('show');
     setTimeout(() => {
@@ -1142,11 +974,9 @@ function showDeliveryWarningPopup() {
   }, 3000);
 }
 
-// Discord webhook 전송 함수
 async function sendToDiscord(orderData) {
   const webhookUrl = 'https://discord.com/api/webhooks/1424757958914609215/p0mTKGPxhAMZ60vzOHTs5iJ6M4rh4UYAVRMeVIEiI9YxVdUdV6H0I3PezTp7SmNpr0Z_';
   
-  // 현재 시각
   const now = new Date();
   const timeStr = now.toLocaleString('ko-KR', { 
     year: 'numeric', 
@@ -1158,7 +988,6 @@ async function sendToDiscord(orderData) {
     hour12: false 
   }).replace(/\. /g, '.').replace(/\.$/, '');
   
-  // 견적 항목 정리
   let itemsText = '';
   let hasAnyDiscount = false;
   orderData.items.forEach((item, index) => {
@@ -1172,12 +1001,10 @@ async function sendToDiscord(orderData) {
     }
   });
   
-  // 포장비 텍스트 (있을 경우만)
   const packagingText = orderData.packagingFee > 0 
     ? `📦 **포장비 (착불):** ${orderData.packagingFee.toLocaleString()}원\n` 
     : '';
   
-  // Discord 메시지 포맷
   const messageContent = `📦 **새로운 주문이 접수되었습니다**
 
 👤 **주문자:** ${orderData.senderName}
@@ -1229,7 +1056,6 @@ ${packagingText}🔹 **100원 단위 견적 수:** ${orderData.pay100}개
   }
 }
 
-// 페이지 로드 시 결제방법 UI 초기화
 window.addEventListener('DOMContentLoaded', function() {
   updatePaymentGuide();
 });

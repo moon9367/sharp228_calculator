@@ -194,41 +194,69 @@ function recalculateAllDiscounts() {
   }
   
   const totalArea = estimateList.reduce((acc, item) => acc + (item.area * item.quantity), 0);
-  
   const totalQuantity = estimateList.reduce((acc, item) => acc + item.quantity, 0);
-  
   const totalBasePrice = estimateList.reduce((acc, item) => acc + item.baseTotal, 0);
   
-  let discountType = 'none';
-  let discountRate = 0;
-  
-  if (totalArea >= 1500000) {
-    discountType = 'delivery';
-    discountRate = 13;
-  } else if (totalArea >= 1200000) {
-    discountType = 'delivery';
-    discountRate = 10;
-  } else if (totalArea >= 1000000) {
-    discountType = 'delivery';
-    discountRate = 5;
-  }
-  else if (totalQuantity >= 10 && totalBasePrice >= 50000) {
-    discountType = 'prepay';
-    
-    if (totalQuantity >= 75) {
-      discountRate = 13;
-    } else if (totalQuantity >= 26) {
-      discountRate = 10;
-    } else if (totalQuantity >= 10) {
-      discountRate = 5;
-    }
-  }
-  
+  // 각 항목을 개별적으로 처리
   estimateList.forEach(item => {
+    const is08T = item.thickness === 0.8;
+    let discountType = 'none';
+    let discountRate = 0;
+    
+    // 면적 할인 체크
+    if (is08T) {
+      // 0.8T: 1,500,000 mm² 이상일 때만 5% 할인
+      if (totalArea >= 1500000) {
+        discountType = 'delivery';
+        discountRate = 5;
+      }
+    } else {
+      // 다른 두께: 기존 면적 할인율
+      if (totalArea >= 1500000) {
+        discountType = 'delivery';
+        discountRate = 13;
+      } else if (totalArea >= 1200000) {
+        discountType = 'delivery';
+        discountRate = 10;
+      } else if (totalArea >= 1000000) {
+        discountType = 'delivery';
+        discountRate = 5;
+      }
+    }
+    
+    // 수량 할인 체크 (면적 할인이 없을 때만)
+    if (discountType === 'none' && totalBasePrice >= 50000) {
+      if (is08T) {
+        // 0.8T: 26개 이상일 때 5% 할인
+        if (totalQuantity >= 26) {
+          discountType = 'prepay';
+          discountRate = 5;
+        }
+      } else {
+        // 다른 두께: 10개 이상부터 기존 할인율
+        if (totalQuantity >= 75) {
+          discountType = 'prepay';
+          discountRate = 13;
+        } else if (totalQuantity >= 26) {
+          discountType = 'prepay';
+          discountRate = 10;
+        } else if (totalQuantity >= 10) {
+          discountType = 'prepay';
+          discountRate = 5;
+        }
+      }
+    }
+    
+    // 할인 적용
     if (discountType !== 'none') {
       let discountedPrice;
       
-      if (discountType === 'delivery') {
+      // 0.8T는 항상 정확한 비율 할인
+      if (is08T) {
+        discountedPrice = item.baseTotal * (1 - discountRate / 100);
+      }
+      // 다른 두께는 delivery일 때 특수 공식, 아니면 비율 할인
+      else if (discountType === 'delivery') {
         discountedPrice = (item.baseTotal / 3) * 2.6;
       } else {
         discountedPrice = item.baseTotal * (1 - discountRate / 100);
